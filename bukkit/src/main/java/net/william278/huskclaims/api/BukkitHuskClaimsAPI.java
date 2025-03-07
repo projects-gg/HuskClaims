@@ -25,8 +25,14 @@ import net.william278.huskclaims.position.Position;
 import net.william278.huskclaims.position.World;
 import net.william278.huskclaims.user.BukkitUser;
 import net.william278.huskclaims.user.OnlineUser;
+import net.william278.huskclaims.util.BukkitSafeTeleportProvider;
+import org.bukkit.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.logging.Level;
 
 /**
  * The Bukkit implementation of the HuskClaims API. Get the instance with {@link #getInstance()}.
@@ -136,6 +142,15 @@ public class BukkitHuskClaimsAPI extends HuskClaimsAPI {
     @NotNull
     public org.bukkit.entity.Player getPlayer(@NotNull OnlineUser user) {
         return ((BukkitUser) user).getBukkitPlayer();
+    }
+
+    @NotNull
+    private final List<Function<Material, Boolean>> SAFETY_CHECKS = List.of(
+            m -> m.isSolid() || m == Material.WATER, Material::isAir, Material::isAir
+    );
+
+    public Location getSafe(Location location) {
+        return BukkitHuskClaims.Adapter.adapt(plugin.getSafeTeleportLocation(BukkitHuskClaims.Adapter.adapt(location)));
     }
 
 }

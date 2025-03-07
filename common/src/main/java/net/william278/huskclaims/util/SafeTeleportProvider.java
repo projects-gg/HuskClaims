@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 
 public interface SafeTeleportProvider {
@@ -59,9 +59,41 @@ public interface SafeTeleportProvider {
         ));
     }
 
-    @NotNull
+    default Position getSafeTeleportLocation(Position position) {
+        final Optional<Region> region = getPlugin().getClaimAt(position).map(Claim::getRegion);
+        if (region.isEmpty()) {
+            return null;
+        }
+        final List<Position> positions = this.getPotentialPositions(position, region.get());
+        return this.getSafeTeleportLocation(positions, positions.size());
+    }
+
+    private Position getSafeTeleportLocation(List<Position> positions, int tries) {
+        final Position position = this.getPerimeterPosition(positions, tries);
+        if (tries <= 0) {
+            getPlugin().log(Level.WARNING, "Failed to get safe teleport location after %s attempts"
+                    .formatted(positions.size()));
+            return null;
+        }
+
+        try {
+            Optional<Position> safePosition = findSafePosition(position).get();
+            return safePosition.orElseGet(() -> safePosition.orElse(this.getSafeTeleportLocation(positions, tries - 1)));
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private Position getPerimeterPosition(@NotNull List<Position> positions, int tries) {
-        return positions.get((tries - 1) % positions.size());
+        if (tries <= 0) {
+            getPlugin().log(Level.WARNING, "Failed to get safe teleport location after %s attempts"
+                    .formatted(positions.size()));
+            return null;
+        }
+
+        int index = Math.floorMod(tries - 1, positions.size());
+        return positions.get(index);
     }
 
     @NotNull
