@@ -39,7 +39,7 @@ public class User implements Trustable, Comparable<User> {
     @Expose
     @Setter(AccessLevel.PACKAGE)
     @NotNull
-    private UUID uuid;
+    private UUID    uuid;
 
     @NotNull
     public static User of(@NotNull UUID uuid, @NotNull String name) {

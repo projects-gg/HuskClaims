@@ -21,16 +21,19 @@ package net.william278.huskclaims.user;
 
 import io.papermc.lib.PaperLib;
 import lombok.Getter;
+import net.luckperms.api.LuckPerms;
 import net.william278.cloplib.listener.InspectorCallbackProvider;
 import net.william278.huskclaims.BukkitHuskClaims;
 import net.william278.huskclaims.HuskClaims;
 import net.william278.huskclaims.hook.HuskHomesHook;
 import net.william278.huskclaims.position.Position;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +43,9 @@ import java.util.Optional;
 
 @Getter
 public class BukkitUser extends OnlineUser {
+
+    private static RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+    private static LuckPerms LUCK_PERMS = provider.getProvider();
 
     private final Player bukkitPlayer;
 
@@ -67,14 +73,17 @@ public class BukkitUser extends OnlineUser {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return bukkitPlayer.hasPermission(permission);
+        return LUCK_PERMS.getUserManager().getUser(bukkitPlayer.getUniqueId()).getCachedData().getPermissionData().checkPermission(permission).asBoolean();
     }
 
     @Override
     public boolean hasPermission(@NotNull String permission, boolean isDefault) {
-        return bukkitPlayer.hasPermission(new Permission(
-                permission, isDefault ? PermissionDefault.TRUE : PermissionDefault.OP
-        ));
+        boolean has = LUCK_PERMS.getUserManager().getUser(bukkitPlayer.getUniqueId()).getCachedData().getPermissionData().checkPermission(permission).asBoolean();
+        if (isDefault && !has) {
+            return true;
+        }
+
+        return has;
     }
 
     @Override
