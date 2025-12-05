@@ -54,6 +54,8 @@ public final class Settings {
 
     @Comment("Locale of the default language file to use. Docs: https://william278.net/docs/huskclaims/translations")
     private String language = Locales.DEFAULT_LOCALE;
+    @Comment("Husku götten sikelim mi?")
+    private boolean huskuGotten = true;
 
     @Comment("Whether to automatically check for plugin updates on startup")
     private boolean checkForUpdates = true;

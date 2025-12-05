@@ -523,6 +523,11 @@ public class ClaimWorld {
     // Check if an operation is allowed in a specific claim
     private boolean isOperationAllowedInClaim(@NotNull Operation operation, @NotNull Claim claim,
                                               @NotNull HuskClaims plugin) {
+
+        //if (operation.getType() == OperationType.PLAYER_DAMAGE_PLAYER && true) {
+        //    return false;
+        //} PROJECTS PVP TOGGLE HERE
+
         if (claim.isOperationAllowed(operation, plugin)) {
             return true;
         }

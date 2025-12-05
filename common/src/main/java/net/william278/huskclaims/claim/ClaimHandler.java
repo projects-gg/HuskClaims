@@ -20,10 +20,7 @@
 package net.william278.huskclaims.claim;
 
 import net.william278.cloplib.handler.Handler;
-import net.william278.cloplib.operation.Operation;
-import net.william278.cloplib.operation.OperationPosition;
-import net.william278.cloplib.operation.OperationUser;
-import net.william278.cloplib.operation.OperationWorld;
+import net.william278.cloplib.operation.*;
 import net.william278.huskclaims.HuskClaims;
 import net.william278.huskclaims.command.IgnoreClaimsCommand;
 import net.william278.huskclaims.position.Position;
